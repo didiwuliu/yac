@@ -33,7 +33,11 @@
 #include "php_yac.h"
 #include "storage/yac_storage.h"
 #include "serializer/yac_serializer.h"
+#ifdef HAVE_FASTLZ_H
+#include <fastlz.h>
+#else
 #include "compressor/fastlz/fastlz.h"
+#endif
 
 zend_class_entry *yac_class_ce;
 
@@ -169,7 +173,9 @@ static int yac_add_impl(char *prefix, uint prefix_len, char *key, uint len, zval
 			}
 			break;
 		case IS_ARRAY:
+#ifdef IS_CONSTANT_ARRAY
 		case IS_CONSTANT_ARRAY:
+#endif
 		case IS_OBJECT:
 			{
 				smart_str buf = {0};
@@ -337,7 +343,9 @@ static zval * yac_get_impl(char * prefix, uint prefix_len, char *key, uint len, 
 				}
 				break;
 			case IS_ARRAY:
+#ifdef IS_CONSTANT_ARRAY
 			case IS_CONSTANT_ARRAY:
+#endif
 			case IS_OBJECT:
 				{
 					if ((flag & YAC_ENTRY_COMPRESSED)) {
